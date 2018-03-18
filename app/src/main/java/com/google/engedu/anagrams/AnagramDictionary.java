@@ -34,6 +34,9 @@ public class AnagramDictionary {
     private ArrayList<String> wordList;
     private HashSet<String> wordSet;
     private HashMap<String, ArrayList<String>> lettersToWord;
+    private HashMap<Integer, ArrayList<String>> sizeToWords;
+    private int wordLength = DEFAULT_WORD_LENGTH;
+
 
 
     public AnagramDictionary(Reader reader) throws IOException {
@@ -42,23 +45,29 @@ public class AnagramDictionary {
         wordList=new ArrayList<>();
         wordSet = new HashSet<>();
         lettersToWord = new HashMap<>();
+        sizeToWords=new HashMap<>();
 
         while((line = in.readLine()) != null) {
             String word = line.trim();
             wordList.add(word);
             wordSet.add(word);
-            String add=sortLetters(word);
-            if(lettersToWord.containsKey(add)){
-                lettersToWord.get(add).add(word);
+            String key=sortLetters(word);
+            if(lettersToWord.containsKey(key)){
+                lettersToWord.get(key).add(word);
             }else{
                 ArrayList<String> r= new ArrayList<>();
                 r.add(word);
-                lettersToWord.put(add,r);
+                lettersToWord.put(key,r);
             }
 
-
-
-
+            int l= key.length();
+            if(sizeToWords.containsKey(l)){
+                sizeToWords.get(l).add(word);
+            }else{
+                ArrayList<String> temp= new ArrayList<>();
+                temp.add(word);
+                sizeToWords.put(l,temp);
+            }
         }
     }
 
@@ -96,9 +105,18 @@ public class AnagramDictionary {
         Arrays.sort(sorted);
         return new String (sorted);
     }
-    
+
 
     public String pickGoodStarterWord() {
-        return "stop";
+
+        ArrayList<String> t = sizeToWords.get(wordLength);
+
+        if(wordLength < MAX_WORD_LENGTH) wordLength++;
+
+        while (true) {
+            String w = t.get(random.nextInt(t.size()));
+            if(getAnagramsWithOneMoreLetter(w).size() >= MIN_NUM_ANAGRAMS) return w;
+        }
     }
-}
+    }
+
