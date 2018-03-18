@@ -39,8 +39,6 @@ public class AnagramDictionary {
         while((line = in.readLine()) != null) {
             String word = line.trim();
             wordList.add(word);
-            wordset.add(word);
-
 
 
         }
